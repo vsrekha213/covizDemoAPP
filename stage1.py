@@ -2,6 +2,8 @@ import os
 import csv
 
 from datetime import date
+from datetime import datetime,timedelta
+
 def adminauthorization():
     os.system("cls")
     print("Welcome")
@@ -26,7 +28,7 @@ def adminauthorization():
         covaxinAvailablity = int(input("Covaxin Availablity : "))
         covishieldAvailablity = int(input("Covaxin Availablity : "))
         row = [tdDate, covaxinAvailablity, covishieldAvailablity, covaxinAvailablity, covishieldAvailablity]
-        with open("admin.csv","a") as fp:
+        with open("admin.csv","a",newline="\n") as fp:
             obj = csv.writer(fp)
             obj.writerow(row)
         return
@@ -80,7 +82,65 @@ def admin():
 
 
 def user():
-    pass
+    userch = int(input("1. Login \n2. SignUp"))
+    if userch == 2:
+        with open("aadhar.csv") as adfp:
+            ad = []
+            obj = csv.reader(adfp)
+            for row in obj:
+                ad.append(row)
+        adcard = input("Enter your Adhar Id")
+        val = 0
+        for val in ad:
+            if val[0] == adcard:
+                verify = input("Verification Enter your DOB")
+                if val[-1] == verify:
+                    print("Verification Successful")
+                    pwd = input("Enter your Password")
+                    with open("Dosage.csv","a",newline="\n") as dos:
+                        tdDate = date.today().strftime("%d/%m/%Y")
+                        pref = int(input("Preffered Vaccine\n 1.Covaxin 2.Covishield"))
+                        val = "covaxin" if pref == 1 else "covishield"
+                        delta = 30 if pref == 1 else 60
+                        date_format = "%d/%m/%Y"
+                        a = datetime.strptime(tdDate, date_format)
+                        # b = datetime.strptime('9/26/2008', date_format)
+                        b = timedelta(days=delta) + a
+                        row = [adcard,pwd,1,tdDate,val,b.strftime("%d/%m/%Y")]
+                        print(row)
+                        obj = csv.writer(dos)
+                        obj.writerow(row)
+                        val=1
+                    print("Thank You!")
+        if val==0:
+            print("Not valid! Try sometime Later")
+
+    if userch == 1:
+        date_format = "%d/%m/%Y"
+        with open("Dosage.csv", "r") as dos:
+            doc = csv.reader(dos)
+            val = []
+            for r in doc:
+                val.append(r)
+
+            userid = input("Enter Adhaar Number")
+            val = 0
+            for i in val:
+                if i[0] == userid:
+                    new = "/".join(i[-1].split("-"))
+                    print(new)
+                    next = datetime.strptime(new, "%d/%m/%Y")
+                    tdDate = date.today().strftime("%d/%m/%Y")
+                    datediff = next - datetime.strptime(tdDate,"%d/%m/%Y")
+                    print("Wait for",datediff.days,"days")
+                    val = 1
+            if val == 0:
+                print("Try Again!")
+
+
+
+
+
 
 
 def authentication():
